@@ -2,4 +2,4 @@
 docker build -t biomonitor .
 
 # Run the docker image!
-docker run -it -v /Volumes/:/Volumes -v ~/Downloads:/Downloads -p 8000:8000 -p 1492:1492 biomonitor
+docker run -it --restart=always -v /Volumes/:/Volumes -v ~/Downloads:/Downloads -p 1492:1492 biomonitor
