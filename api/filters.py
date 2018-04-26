@@ -2,7 +2,7 @@ import seaborn
 import pylab as plt
 import numpy as np
 from scipy.signal import butter, lfilter
-from mathtools.utils import Vessel
+from vessel import Vessel
 
 
 def lowpass(t, y, filter_order=5, freq_cutoff=10, zi=[]):
