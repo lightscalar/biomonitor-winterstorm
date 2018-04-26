@@ -8,6 +8,7 @@ from flask_cors import CORS
 from configure import *
 from ipdb import set_trace as debug
 from os.path import expanduser
+import re
 
 
 PORT = 5000
@@ -18,6 +19,12 @@ api = Api(app)
 # Define valid SD cards.
 valid_volumes = ['YELLOW', 'ORANGE', 'PINK', 'PURPLE', 'WHITE']
 valid_volumes = ['/Volumes/{:s}'.format(v) for v in valid_volumes]
+
+
+def get_board_name(volume_name):
+    '''Extract the board name from the volume name.'''
+    color = volume_name[9:]
+    return 'bio_{:s}'.format(color.lower())
 
 
 class Collections(Resource):
@@ -58,7 +65,12 @@ class Uploads(Resource):
         # Try to upload data.
         data = request.json
         print(data)
-        volume = data['volume']
+        sd_card = data['volume']
+        annotation_file = data['annotationFile']
+        upload_data()
+        board = get_board_name(sd_card)
+        process_annotation(annotationFile, board_name)
+        process_data()
 
 
 class Configurations(Resource):
