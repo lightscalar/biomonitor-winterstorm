@@ -51,7 +51,7 @@ class Annotations(Resource):
         # Index
         loc = expanduser('~')
         annotation_locs = '{:s}/Downloads/annotation*'.format(loc)
-        annotation_locs = '/Downloads/annotation*'.format(loc)
+        # annotation_locs = '/Downloads/annotation*'.format(loc)
         available_files = glob(annotation_locs)
         return available_files
 
