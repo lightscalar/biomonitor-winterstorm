@@ -5,6 +5,12 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Data files
+*.dat
+*.csv
+*.zip
+
+
 # Editor directories and files
 .idea
 .vscode

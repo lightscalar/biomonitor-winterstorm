@@ -9,23 +9,28 @@ export default new Vuex.Store ({
 
     volumes: [],
     collections: [],
-    sysStatus: 'OK'
+    sysStatus: 'OK',
+    annotations: []
 
   },
 
   mutations: {
 
     setVolumes (state, volumes) {
-     state.volumes = volumes
+      state.volumes = volumes
+    },
+
+    setAnnotations (state, annotations) {
+      state.annotations = annotations
     },
 
     setCollections (state, collections) {
       console.log(collections)
-     state.collections = collections
+      state.collections = collections
     },
 
     updateStatus (state, sysStatus) {
-     state.sysStatus = sysStatus
+      state.sysStatus = sysStatus
     }
 
 
@@ -48,6 +53,18 @@ export default new Vuex.Store ({
     getVolumes (context) {
       api.listResource('volumes').then( function (resp) {
         context.commit('setVolumes', resp.data)
+      })
+    },
+
+    getAnnotations (context) {
+      api.listResource('annotations').then( function (resp) {
+        context.commit('setAnnotations', resp.data)
+      })
+    },
+
+    uploadData (context, dataLocation) {
+      api.postResource('uploads', dataLocation).then( function (resp) {
+        context.commit('updateStatus', resp.data)
       })
     },
 

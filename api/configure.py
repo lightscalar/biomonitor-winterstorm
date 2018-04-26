@@ -5,11 +5,12 @@ import os
 def configure_card(config):
     '''Configure SD card for Biomonitor data collections.'''
     config_filename = '{:s}/config.txt'.format(config['volume'])
-    data_files = '{:s}/*.dat'.format(config['volume'])
+    data_filenames = '{:s}/*.dat'.format(config['volume'])
+    data_files = glob(data_filenames)
     pid = config['id']
     duration = config['duration']
-    files = glob(config_filename)
-    if len(files)>0:
+    config_files = glob(config_filename)
+    if len(config_files)>0:
         os.remove(config_filename)
     if len(data_files)>0:
         os.remove(data_files)
