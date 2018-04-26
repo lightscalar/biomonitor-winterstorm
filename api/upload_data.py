@@ -33,38 +33,67 @@ def get_board_name(volume_name):
 
 def build_and_merge(volume_name, annotation_file):
     '''Build and merge the data.'''
-    board = get_board_name(volume_name)
-    annotations, time_syncs = process_annotation_file(annotation_file)
+
+    # Name that board!
+    board_name = get_board_name(volume_name)
+
+    # Extract annotations.
+    annotations, time_syncs, time_delta = \
+            process_annotation_file(annotation_file, board_name)
+
+    # Grab the data from the SD card.
+    upload_data()
+
+    # Process data in the temporary folder; create CSV files, too.
+    process_data(time_delta, annotations, volume_name)
 
 
 def process_annotation_file(annotation_filename, board_name):
     '''Process annotation file in ~/Downloads.'''
     text = open(annotation_filename, 'r').read()
-    data = json.loads()
+    data = json.loads(text)
 
     # Extract annotations.
     board_data = data[board_name]
-    annotations = []
+    annotations = {'content': [], 'datetime': [], 'unix_time': []}
+    time_syncs = []
     for entry in board_data:
         if entry['content'] != '!':
             # A legit annotation.
-            annotation = {'content': entry['content']}
-            annotation['unix_time'] = entry['date']
-            annotatio ['datetime']  = datetime.fromtimestamp(1524700389).\
-                    strftime('%Y-%m-%d %H:%M:%S')
+            annotations['content'].append(entry['content'])
+            annotations['unix_time'].append(entry['start_time'])
+            annotations['datetime'].append(datetime.fromtimestamp(entry['start_time']).\
+                    strftime('%Y-%m-%d %H:%M:%S'))
+        else:
+            # Extract time syncs.
+            sync = {'datetime': entry['date']}
+            sync['start_tick'] = entry['start_tick']
+            sync['start_time'] = entry['start_time']
+            time_syncs.append(sync)
 
+    mean_delta = np.mean([(s['start_time']-s['start_tick']) for\
+            s in time_syncs])
 
-
+    return annotations, time_syncs, mean_delta
 
 
 def timestamp():
     return datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
 
 
+def extract_pid(volume_name):
+    '''Extract PID from the config.old file.'''
+    rgx = 'PID: (\d+)'
+    config = open('{:s}/config.old'.format(volume_name)).readline()
+    pid = re.search(rgx, config)
+    pid = pid[1] if pid else None
+    return pid
+
+
 def find_sd_cards():
     '''Find valid SD cards.'''
     # Define valid SD cards.
-    valid_volumes = ['YELLOW', 'BLUE', 'RED', 'WHITE', 'GREEN']
+    valid_volumes = ['YELLOW', 'ORANGE', 'PINK', 'WHITE', 'PURPLE']
     valid_volumes = ['/Volumes/{:s}'.format(v) for v in valid_volumes]
     available_disks = glob('/Volumes/*')
     return [v for v in available_disks if v in valid_volumes]
@@ -126,18 +155,28 @@ def read_data_file(data_file, data):
     return data
 
 
-def create_csv(data):
+def create_csv(data, annotations):
     '''Create CSV files containing the data.'''
     files_to_compress = []
     zip_location = '{:s}/{:s}.zip'.format(ZIP_LOC, data.pid)
     for c, channel_name in enumerate(['PZT', 'PPG', 'IMP']):
         filename = '{:s}/{:s}_{:s}.csv'.format(CSV_LOC, data.pid, channel_name)
         files_to_compress.append(filename)
-        data_dict = {'timestamps': data.t[c], 'values': data.v[c],
-                'filtered values (lowpass; 10 Hz)': data.vf[c]}
+        data_dict = {'timestamps': data.t[c], 'datetime': data.datetime[c],
+                'values': data.v[c], 'filtered values (lowpass; 10 Hz)':
+                data.vf[c]}
         df = pd.DataFrame(data_dict)
-        df = df[['timestamps', 'values', 'filtered values (lowpass; 10 Hz)']]
+        df = df[['timestamps', 'datetime', 'values',\
+                'filtered values (lowpass; 10 Hz)']]
         df.to_csv(filename)
+
+    # Now save the annotations
+    annot_filename = '{:s}/{:s}_annotations.csv'.format(CSV_LOC, data.pid)
+    files_to_compress.append(annot_filename)
+    data_dict = annotations
+    df = pd.DataFrame(data_dict)
+    df = df[['unix_time', 'datetime', 'content']]
+    df.to_csv(annot_filename)
 
     # Now save all files as compressed zip file.
     with ZipFile(zip_location, 'w') as f:
@@ -148,7 +187,13 @@ def create_csv(data):
     copy(zip_location, WEB_LOC)
 
 
-def process_data():
+def format_date(unix_time):
+    '''Convert unix time to datetime string.'''
+    return datetime.fromtimestamp(unix_time).\
+            strftime('%Y-%m-%d %H:%M:%S')
+
+
+def process_data(time_offset, annotations, volume_name):
     '''Process all data in the temporary directory.'''
 
     # Here is the total.
@@ -157,10 +202,12 @@ def process_data():
 
     # Verify that data files have been transferred.
     if len(data_files)>0:
-        pid = get_pid(data_files[0])
+        pid = extract_pid(volume_name)
         data = Vessel('{:s}/{:s}.dat'.format(ARXIV_LOC, pid))
         data.pid = pid
         data.uploaded_at = timestamp()
+        data.t_ = {}
+        data.datetime = {}
         data.t = {}
         data.v = {}
         data.vf = {}
@@ -168,6 +215,8 @@ def process_data():
         # Set up channels.
         for k in [0,1,2]:
             data.t[k] = []
+            data.t_[k] = []
+            data.datetime[k] = []
             data.v[k] = []
 
         # Extract data from files.
@@ -179,8 +228,10 @@ def process_data():
             idx = np.argsort(data.t[c])
             data.t[c] = np.array(data.t[c])[idx]
             data.v[c] = np.array(data.v[c])[idx]
-            data.t[c] = data.t[c] - data.t[c][0]
+            data.t[c] = data.t[c]
             data.t[c] = data.t[c] * 1e-6
+            data.t_[c] = data.t[c] + time_offset
+            data.datetime[c] = [format_date(ts) for ts in data.t_[c]]
             vf, _ = lowpass(data.t[c], data.v[c], freq_cutoff=10)
             data.vf[c] = np.array(vf)
 
@@ -189,7 +240,18 @@ def process_data():
         data.save()
 
         # Write out CSV data and zip it up.
-        create_csv(data)
+        create_csv(data, annotations)
+        for dfile in data_files:
+            os.remove(dfile)
 
         return data
+
+
+if __name__ == '__main__':
+
+    annotation_filename = '/Users/mjl/Downloads/annotations.txt'
+    volume_name = '/Volumes/ORANGE'
+
+    # out = process_annotation_file(annotation_filename, board_name)
+    build_and_merge(volume_name, annotation_filename)
 
