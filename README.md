@@ -15,7 +15,7 @@
   4. A pop-up window will open from the menu bar on your computer.  Once it displays 'Docker is now up and running!', you're ready!
 
   5. Navigate to the folder that you cloned this repository into.  Run ```sh start_image.sh``` and let the application
-  take care of itself!
+  take care of itself.
 
   6. Open ```localhost:8000``` in your web browser and use the application!
 
