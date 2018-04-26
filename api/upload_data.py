@@ -9,6 +9,9 @@ from ipdb import set_trace as debug
 import pandas as pd
 from zipfile import ZipFile
 from datetime import datetime
+from os.path import expanduser
+from datetime import datetime
+import json
 
 
 # Temporary data file location.
@@ -20,6 +23,38 @@ WEB_LOC = '../static/zipped/'
 MAXVAL = 2**24-1
 MAXREF = 2.5
 COVFAC = MAXREF*(1/MAXVAL)
+
+
+def get_board_name(volume_name):
+    '''Extract the board name from the volume name.'''
+    color = volume_name[9:]
+    return 'bio_{:s}'.format(color.lower())
+
+
+def build_and_merge(volume_name, annotation_file):
+    '''Build and merge the data.'''
+    board = get_board_name(volume_name)
+    annotations, time_syncs = process_annotation_file(annotation_file)
+
+
+def process_annotation_file(annotation_filename, board_name):
+    '''Process annotation file in ~/Downloads.'''
+    text = open(annotation_filename, 'r').read()
+    data = json.loads()
+
+    # Extract annotations.
+    board_data = data[board_name]
+    annotations = []
+    for entry in board_data:
+        if entry['content'] != '!':
+            # A legit annotation.
+            annotation = {'content': entry['content']}
+            annotation['unix_time'] = entry['date']
+            annotatio ['datetime']  = datetime.fromtimestamp(1524700389).\
+                    strftime('%Y-%m-%d %H:%M:%S')
+
+
+
 
 
 def timestamp():
