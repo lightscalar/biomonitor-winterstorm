@@ -223,7 +223,7 @@ def process_data(time_offset, annotations, volume_name):
         pid = extract_pid(volume_name)
         print(ARXIV_LOC)
         print(pid)
-        data = Vessel('/app/api/data/arxiv/{:s}.dat'.format( pid))
+        data = Vessel('{:s}/{:s}.dat'.format(ARXIV_LOC, pid))
         data.pid = pid
         data.uploaded_at = timestamp()
         data.t_ = {}
