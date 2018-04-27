@@ -8,6 +8,7 @@ yarn-error.log*
 *.dat
 *.csv
 *.zip
+dist/static/*
 
 
 # Editor directories and files
