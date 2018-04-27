@@ -17,7 +17,7 @@ import json
 DOCKER = True
 
 # Temporary data file location.
-if docker:
+if DOCKER:
     TEMP_LOC = '/app/api/data/tmp'
     ARXIV_LOC = '/app/api/data/arxiv'
     CSV_LOC = '/app/api/data/csv'
