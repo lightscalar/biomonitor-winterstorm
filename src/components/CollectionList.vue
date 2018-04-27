@@ -59,7 +59,7 @@
     methods: {
 
       link (item) {
-        return 'static/zipped/'+item.id+'.zip'
+        return 'zipped/'+item.id+'.zip'
       }
 
     },
