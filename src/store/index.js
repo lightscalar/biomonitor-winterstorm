@@ -65,6 +65,7 @@ export default new Vuex.Store ({
     uploadData (context, dataLocation) {
       api.postResource('uploads', dataLocation).then( function (resp) {
         context.commit('updateStatus', resp.data)
+	router.push('/')
       })
     },
 

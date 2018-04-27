@@ -27,7 +27,7 @@ if DOCKER:
     ARXIV_LOC = '/save/arxiv'
     CSV_LOC = '/save/csv'
     ZIP_LOC = '/save/zip'
-    WEB_LOC = '/zipout'
+    WEB_LOC = '/app/dist/zipout'
 else:
     pass
     # TEMP_LOC = './data/tmp'

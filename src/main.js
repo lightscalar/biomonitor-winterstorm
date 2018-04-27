@@ -8,6 +8,7 @@ import store from './store'
 import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 import moment from 'moment'
 window.moment = moment
+window.router = router
 
 Vue.use(Vuetify)
 
