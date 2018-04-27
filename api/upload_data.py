@@ -15,7 +15,7 @@ import json
 
 
 # Temporary data file location.
-TEMP_LOC = './data/tmp'
+TEMP_LOC = '/app/api/data/tmp'
 ARXIV_LOC = './data/arxiv'
 CSV_LOC = './data/csv'
 ZIP_LOC = './data/zip'
