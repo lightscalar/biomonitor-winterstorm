@@ -13,7 +13,7 @@ import re
 
 
 # Essentials.
-PORT = 1492
+PORT = 5000
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -91,5 +91,7 @@ api.add_resource(Uploads, '/uploads')
 
 
 if __name__ == '__main__':
-    # app.run()
-    wsgi.server(eventlet.listen(('localhost', PORT)), app)
+  
+
+    app.run(host='0.0.0.0')
+    # wsgi.server(eventlet.listen(('localhost', PORT)), app)
