@@ -17,7 +17,7 @@ import json
 DOCKER = True
 
 # Temporary data file location.
-if docker:
+if DOCKER:
     TEMP_LOC = '/app/api/data/tmp'
     ARXIV_LOC = '/app/api/data/arxiv'
     CSV_LOC = '/app/api/data/csv'
@@ -65,6 +65,7 @@ def process_annotation_file(annotation_filename, board_name):
 
     # Extract annotations.
     board_data = data[board_name]
+    print(board_data)
     annotations = {'content': [], 'datetime': [], 'unix_time': []}
     time_syncs = []
     for entry in board_data:
@@ -84,7 +85,6 @@ def process_annotation_file(annotation_filename, board_name):
     mean_delta = np.mean([(s['start_time']-s['start_tick']) for\
             s in time_syncs])
 
-    print(annotations)
     return annotations, time_syncs, mean_delta
 
 
