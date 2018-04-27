@@ -18,17 +18,23 @@ DOCKER = True
 
 # Temporary data file location.
 if DOCKER:
-    TEMP_LOC = '/app/api/data/tmp'
-    ARXIV_LOC = '/app/api/data/arxiv'
-    CSV_LOC = '/app/api/data/csv'
-    ZIP_LOC = '/app/api/data/zip'
-    WEB_LOC = '/app/dist/static/zipped/'
+    # TEMP_LOC = '/app/api/data/tmp'
+    # ARXIV_LOC = '/app/api/data/arxiv'
+    # CSV_LOC = '/app/api/data/csv'
+    # ZIP_LOC = '/app/api/data/zip'
+    # WEB_LOC = '/app/dist/static/zipped/'
+    TEMP_LOC = '/save/tmp'
+    ARXIV_LOC = '/save/arxiv'
+    CSV_LOC = '/save/csv'
+    ZIP_LOC = '/save/zip'
+    WEB_LOC = '/zipout'
 else:
-    TEMP_LOC = './data/tmp'
-    ARXIV_LOC = './data/arxiv'
-    CSV_LOC = './data/csv'
-    ZIP_LOC = './data/zip'
-    WEB_LOC = '../static/zipped/'
+    pass
+    # TEMP_LOC = './data/tmp'
+    # ARXIV_LOC = './data/arxiv'
+    # CSV_LOC = './data/csv'
+    # ZIP_LOC = './data/zip'
+    # WEB_LOC = '../static/zipped/'
 
 MAXVAL = 2**24-1
 MAXREF = 2.5
@@ -215,7 +221,9 @@ def process_data(time_offset, annotations, volume_name):
     # Verify that data files have been transferred.
     if len(data_files)>0:
         pid = extract_pid(volume_name)
-        data = Vessel('{:s}/{:s}.dat'.format(ARXIV_LOC, pid))
+        print(ARXIV_LOC)
+        print(pid)
+        data = Vessel('/app/api/data/arxiv/{:s}.dat'.format( pid))
         data.pid = pid
         data.uploaded_at = timestamp()
         data.t_ = {}
@@ -249,6 +257,7 @@ def process_data(time_offset, annotations, volume_name):
 
         # Archive the data using Vessel format.
         data.duration = '{:0.2f}'.format(data.t[0].max()/60)
+        print('BEFORE SAVE: {:s}'.format(data._filename))
         data.save()
 
         # Write out CSV data and zip it up.
