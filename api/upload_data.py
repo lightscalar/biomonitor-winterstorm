@@ -85,6 +85,7 @@ def process_annotation_file(annotation_filename, board_name):
     mean_delta = np.mean([(s['start_time']-s['start_tick']) for\
             s in time_syncs])
 
+    print(time_syncs, mean_delta)
     return annotations, time_syncs, mean_delta
 
 
