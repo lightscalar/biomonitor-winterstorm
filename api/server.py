@@ -93,5 +93,5 @@ api.add_resource(Uploads, '/uploads')
 if __name__ == '__main__':
   
 
-    app.run(host='0.0.0.0')
-    # wsgi.server(eventlet.listen(('localhost', PORT)), app)
+    # app.run(host='0.0.0.0')
+    wsgi.server(eventlet.listen(('0.0.0.0', PORT)), app)
