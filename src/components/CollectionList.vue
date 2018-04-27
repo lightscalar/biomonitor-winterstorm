@@ -19,7 +19,7 @@
               <td class="text-xs-left">{{ props.item.uploadedAt }}</td>
               <td class="text-xs-left">{{ props.item.duration }}</td>
               <td class="text-xs-left">
-                <v-btn :href='link(props.item)'>
+                <v-btn :href='link(props.item)' download>
                   <v-icon>
                     file_download
                   </v-icon>
