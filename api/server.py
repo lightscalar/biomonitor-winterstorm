@@ -65,6 +65,7 @@ class Uploads(Resource):
         volume_name = data['volume']
         annotation_file = data['annotationFile']
         build_and_merge(volume_name, annotation_file)
+        print('Finished BUILD and MERGE.')
         return 200
 
 
