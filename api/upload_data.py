@@ -16,10 +16,10 @@ import json
 
 # Temporary data file location.
 TEMP_LOC = '/app/api/data/tmp'
-ARXIV_LOC = './data/arxiv'
-CSV_LOC = './data/csv'
-ZIP_LOC = './data/zip'
-WEB_LOC = '../static/zipped/'
+ARXIV_LOC = '/app/api/data/arxiv'
+CSV_LOC = '/app/api/data/csv'
+ZIP_LOC = '/app/api/data/zip'
+WEB_LOC = '/app/dist/static/zipped/'
 MAXVAL = 2**24-1
 MAXREF = 2.5
 COVFAC = MAXREF*(1/MAXVAL)
