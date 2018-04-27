@@ -17,6 +17,7 @@ PORT = 5000
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
+ARXIV_LOC = '/save/arxiv'
 
 # Define valid SD cards.
 valid_volumes = ['YELLOW', 'ORANGE', 'PINK', 'PURPLE', 'WHITE']
@@ -27,7 +28,7 @@ class Collections(Resource):
 
     def get(self):
         '''List available data collections.'''
-        collections = glob('./data/arxiv/*.dat')
+        collections = glob('{:s}/*.dat'.format(ARXIV_LOC))
         payload = []
         for collection in collections:
             data = Vessel(collection)
