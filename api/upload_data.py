@@ -14,12 +14,22 @@ from datetime import datetime
 import json
 
 
+DOCKER = True
+
 # Temporary data file location.
-TEMP_LOC = '/app/api/data/tmp'
-ARXIV_LOC = '/app/api/data/arxiv'
-CSV_LOC = '/app/api/data/csv'
-ZIP_LOC = '/app/api/data/zip'
-WEB_LOC = '/app/dist/static/zipped/'
+if docker:
+    TEMP_LOC = '/app/api/data/tmp'
+    ARXIV_LOC = '/app/api/data/arxiv'
+    CSV_LOC = '/app/api/data/csv'
+    ZIP_LOC = '/app/api/data/zip'
+    WEB_LOC = '/app/dist/static/zipped/'
+else:
+    TEMP_LOC = './data/tmp'
+    ARXIV_LOC = './data/arxiv'
+    CSV_LOC = './data/csv'
+    ZIP_LOC = './data/zip'
+    WEB_LOC = '../static/zipped/'
+
 MAXVAL = 2**24-1
 MAXREF = 2.5
 COVFAC = MAXREF*(1/MAXVAL)
@@ -74,6 +84,7 @@ def process_annotation_file(annotation_filename, board_name):
     mean_delta = np.mean([(s['start_time']-s['start_tick']) for\
             s in time_syncs])
 
+    print(annotations)
     return annotations, time_syncs, mean_delta
 
 
